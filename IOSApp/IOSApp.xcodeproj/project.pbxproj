@@ -18,7 +18,8 @@
 		0F352D402CA49A65003305C2 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = 0F352D3F2CA49A65003305C2 /* Models */; };
 		0F352D422CA49AFB003305C2 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = 0F352D412CA49AFB003305C2 /* Models */; };
 		0FDDD2DF2C9AF97900E9BA59 /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = 0FDDD2DE2C9AF97900E9BA59 /* Models */; };
-		EE90D7894766B5BC2FB1C90C /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B384BAECF727A5552E78E57B /* LoginScreen.swift */; };
+		4544FA9B78EA1DD45998E1A1 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFD7C0DEFDCF64175223B5B /* LoginScreen.swift */; };
+		987F29431A4DBE4D0615A3B2 /* LoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3E8EA8910CE4B1C1FE8C29 /* LoginButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +50,9 @@
 		0F0C8C6F2C9AF86B0071E150 /* IOSAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IOSAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F0C8C732C9AF86B0071E150 /* IOSAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSAppUITests.swift; sourceTree = "<group>"; };
 		0F0C8C752C9AF86B0071E150 /* IOSAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		6DFD7C0DEFDCF64175223B5B /* LoginScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		AEF281EC9C5ECAFBDC88A475 /* Colors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		B384BAECF727A5552E78E57B /* LoginScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
+		EC3E8EA8910CE4B1C1FE8C29 /* LoginButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,12 +106,13 @@
 		0F0C8C572C9AF86A0071E150 /* IOSApp */ = {
 			isa = PBXGroup;
 			children = (
-				4C0163F8640A48C90BECF7F4 /* Views */,
 				0F0C8C582C9AF86A0071E150 /* IOSAppApp.swift */,
 				0F0C8C5A2C9AF86A0071E150 /* ContentView.swift */,
 				0F0C8C5C2C9AF86B0071E150 /* Assets.xcassets */,
 				0F0C8C5E2C9AF86B0071E150 /* Preview Content */,
 				BEA1C7D8C012ABDAC651D144 /* Design */,
+				4C0163F8640A48C90BECF7F4 /* Views */,
+				890E8F5944C2D78CFB1940EF /* Screens */,
 			);
 			path = IOSApp;
 			sourceTree = "<group>";
@@ -142,9 +145,17 @@
 		4C0163F8640A48C90BECF7F4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B384BAECF727A5552E78E57B /* LoginScreen.swift */,
+				EC3E8EA8910CE4B1C1FE8C29 /* LoginButton.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		890E8F5944C2D78CFB1940EF /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				6DFD7C0DEFDCF64175223B5B /* LoginScreen.swift */,
+			);
+			path = Screens;
 			sourceTree = "<group>";
 		};
 		BEA1C7D8C012ABDAC651D144 /* Design */ = {
@@ -295,8 +306,9 @@
 			files = (
 				0F0C8C5B2C9AF86A0071E150 /* ContentView.swift in Sources */,
 				0F0C8C592C9AF86A0071E150 /* IOSAppApp.swift in Sources */,
-				EE90D7894766B5BC2FB1C90C /* LoginScreen.swift in Sources */,
 				0D0638D5D367534F0CA147EF /* Colors.swift in Sources */,
+				4544FA9B78EA1DD45998E1A1 /* LoginScreen.swift in Sources */,
+				987F29431A4DBE4D0615A3B2 /* LoginButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -460,6 +472,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"IOSApp/Preview Content\"";
+				DEVELOPMENT_TEAM = WUDPNSTVXN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -492,6 +505,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"IOSApp/Preview Content\"";
+				DEVELOPMENT_TEAM = WUDPNSTVXN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

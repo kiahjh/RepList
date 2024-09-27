@@ -1,4 +1,37 @@
 import SwiftUI
 
-let gray100 = Color(red: 0.95, green: 0.95, blue: 0.98)
-let gray200 = Color(red: 0.9, green: 0.9, blue: 0.94)
+let primary50 = Color(hex: "#FEF1D3")!
+let primary200 = Color(hex: "#F3CE83")!
+
+let neutral800 = Color(hex: "#222222")!
+
+extension Color {
+  init?(hex: String) {
+    let r, g, b: Double
+
+    var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+    hexSanitized = hexSanitized.hasPrefix("#") ? String(hexSanitized.dropFirst()) : hexSanitized
+
+    var rgb: UInt64 = 0
+    Scanner(string: hexSanitized).scanHexInt64(&rgb)
+
+    switch hexSanitized.count {
+    case 3: // RGB
+      (r, g, b) = (
+        Double((rgb >> 8) & 0xF) / 15.0,
+        Double((rgb >> 4) & 0xF) / 15.0,
+        Double(rgb & 0xF) / 15.0
+      )
+    case 6: // RRGGBB
+      (r, g, b) = (
+        Double((rgb >> 16) & 0xFF) / 255.0,
+        Double((rgb >> 8) & 0xFF) / 255.0,
+        Double(rgb & 0xFF) / 255.0
+      )
+    default:
+      return nil
+    }
+
+    self.init(red: r, green: g, blue: b)
+  }
+}
