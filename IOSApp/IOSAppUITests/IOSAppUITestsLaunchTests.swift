@@ -2,7 +2,7 @@
 //  IOSAppUITestsLaunchTests.swift
 //  IOSAppUITests
 //
-//  Created by Miciah on 9/18/24.
+//  Created by Miciah on 12/19/24.
 //
 
 import XCTest
@@ -17,6 +17,7 @@ final class IOSAppUITestsLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
         app.launch()

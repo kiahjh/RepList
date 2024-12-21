@@ -12,8 +12,8 @@
 	"argv": [
 		"/opt/homebrew/bin/xcode-build-server"
 	],
-	"workspace": "/Users/miciah/active-projects/RepList/IOSApp/IOSApp.xcodeproj/project.xcworkspace",
-	"build_root": "/Users/miciah/Library/Developer/Xcode/DerivedData/IOSApp-gowhpoofavgmaogntntiqeokpjjl",
+	"workspace": "/Users/miciah/active-projects/replist/IOSApp/IOSApp.xcodeproj/project.xcworkspace",
+	"build_root": "/Users/miciah/Library/Developer/Xcode/DerivedData/IOSApp-eunuydjnysubkuhfbjwhbujyuwjt",
 	"scheme": "IOSApp",
 	"kind": "xcode"
 }

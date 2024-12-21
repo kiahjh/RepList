@@ -1,0 +1,13 @@
+struct User {
+  id: UUID,
+  username: String,
+  email: String,
+  hashed_password: String,
+}
+
+struct SessionToken {
+  id: UUID,
+  user_id: UUID,
+  created_at: Date,
+  expiration: Date,
+}
