@@ -1,2 +1,3 @@
 .nvim/
 api/target/
+api/.env

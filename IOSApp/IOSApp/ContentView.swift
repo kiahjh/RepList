@@ -1,11 +1,18 @@
 import SwiftUI
 
 struct ContentView: View {
+  @EnvironmentObject var appState: AppState
+
   var body: some View {
-    LoginScreen()
+    if self.appState.sessionToken != nil {
+      Main()
+    } else {
+      UnauthedScreen()
+    }
   }
 }
 
 #Preview {
   ContentView()
+    .environmentObject(AppState())
 }
