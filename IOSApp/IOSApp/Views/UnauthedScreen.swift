@@ -33,13 +33,13 @@ struct UnauthedScreen: View {
             self.appState.signingIn = true
           }
           .sheet(isPresented: self.$appState.signingIn) {
-            SignupSheet()
+            SignupForm()
           }
           BigButton(label: "Log in", color: .secondary) {
             self.appState.loggingIn = true
           }
           .sheet(isPresented: self.$appState.loggingIn) {
-            LoginSheet()
+            LoginForm()
           }
         }
       }

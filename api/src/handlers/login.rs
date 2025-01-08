@@ -1,5 +1,7 @@
-use super::RouteResponse;
-use crate::{db::Db, types::User};
+use crate::{
+    db::{tables::User, Db},
+    types::{login, Response},
+};
 use axum::{Extension, Json};
 
 #[derive(serde::Deserialize)]
@@ -17,7 +19,7 @@ pub struct Output {
 pub async fn login(
     Extension(db): Extension<Db>,
     Json(input): Json<Input>,
-) -> Json<RouteResponse<Output>> {
+) -> Json<Response<login::Output>> {
     // see if there's a user with provided username
     let user_res = sqlx::query_as!(
         User,
@@ -37,29 +39,22 @@ pub async fn login(
                 // get expired eventually
                 let session_token = db.create_session_token(user.id).await;
 
-                session_token.map_or_else(
+                Json(session_token.map_or_else(
                     // if anything goes wrong when creating the token, return a 500
-                    |_| RouteResponse::failure(0, 500, "Internal server error"),
+                    |_| Response::failure(500, "Internal server error"),
                     // return the token
-                    |session_token| {
-                        RouteResponse::success(
-                            200,
-                            Output {
-                                token: session_token.to_string(),
-                            },
-                        )
-                    },
-                )
+                    |session_token| Response::success(session_token.to_string()),
+                ))
             } else {
                 // if the password is incorrect, return a 401
-                RouteResponse::failure(1, 401, "Invalid password")
+                Json(Response::failure(401, "Invalid password"))
             }
         }
 
         // user doesn't exist
-        Err(sqlx::Error::RowNotFound) => RouteResponse::failure(2, 404, "User not found"),
+        Err(sqlx::Error::RowNotFound) => Json(Response::failure(404, "User not found")),
 
         // some other error
-        Err(_) => RouteResponse::failure(3, 500, "Internal server error"),
+        Err(_) => Json(Response::failure(500, "Internal server error")),
     }
 }

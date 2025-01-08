@@ -1,24 +1,14 @@
-use super::RouteResponse;
-use crate::{db::Db, types::User};
+use crate::{
+    db::{tables::User, Db},
+    types::{signup, Response},
+};
 use axum::{Extension, Json};
 use bcrypt::DEFAULT_COST;
 
-#[derive(serde::Deserialize)]
-pub struct Input {
-    username: String,
-    email: String,
-    password: String,
-}
-
-#[derive(serde::Serialize)]
-pub struct Output {
-    token: String,
-}
-
 pub async fn signup(
     Extension(db): Extension<Db>,
-    Json(input): Json<Input>,
-) -> Json<RouteResponse<Output>> {
+    Json(input): Json<signup::Input>,
+) -> Json<Response<signup::Output>> {
     // see if there's a user with provided username
     let user_res = sqlx::query_as!(
         User,
@@ -35,23 +25,16 @@ pub async fn signup(
             // create a token
             let session_token = db.create_session_token(user.id).await;
 
-            session_token.map_or_else(
+            Json(session_token.map_or_else(
                 // if anything goes wrong when creating the token, return a 500
-                |_| RouteResponse::failure(4, 500, "Internal server error"),
+                |_| Response::failure(500, "Internal server error"),
                 // return the token
-                |session_token| {
-                    RouteResponse::success(
-                        200,
-                        Output {
-                            token: session_token.to_string(),
-                        },
-                    )
-                },
-            )
+                |session_token| Response::success(session_token.to_string()),
+            ))
         }
 
         // user already exists but password is incorrect
-        Ok(_) => RouteResponse::failure(5, 401, "User already exists"),
+        Ok(_) => Json(Response::failure(401, "User already exists")),
 
         // user doesn't exist, so we create a new user
         Err(sqlx::Error::RowNotFound) => {
@@ -66,25 +49,18 @@ pub async fn signup(
             if let Ok(new_user) = new_user {
                 let session_token = db.create_session_token(new_user.id).await;
 
-                session_token.map_or_else(
+                Json(session_token.map_or_else(
                     // if anything goes wrong when creating the token, return a 500
-                    |_| RouteResponse::failure(6, 500, "Internal server error"),
+                    |_| Response::failure(500, "Internal server error"),
                     // return the token
-                    |session_token| {
-                        RouteResponse::success(
-                            200,
-                            Output {
-                                token: session_token.to_string(),
-                            },
-                        )
-                    },
-                )
+                    |session_token| Response::success(session_token.to_string()),
+                ))
             } else {
-                RouteResponse::failure(6, 500, "Internal server error")
+                Json(Response::failure(500, "Internal server error"))
             }
         }
 
         // some other error
-        Err(_) => RouteResponse::failure(7, 500, "Internal server error"),
+        Err(_) => Json(Response::failure(500, "Internal server error")),
     }
 }

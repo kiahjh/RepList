@@ -1,7 +1,8 @@
 use sqlx::{Pool, Postgres};
+use tables::User;
 use uuid::Uuid;
 
-use crate::types::User;
+pub mod tables;
 
 #[derive(Clone)]
 pub struct Db {

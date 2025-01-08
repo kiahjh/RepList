@@ -1,0 +1,12 @@
+name: "Signup"
+description: "Create a new account for a user, returns a session token"
+
+---
+
+@input {
+  email: String
+  username: String
+  password: String
+}
+
+@output String

@@ -1,0 +1,11 @@
+name: "Login"
+description: "Log in a user, returns a session token"
+
+---
+
+@input {
+  username: String
+  password: String
+}
+
+@output String

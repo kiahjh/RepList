@@ -4,14 +4,15 @@ struct Main: View {
   @EnvironmentObject var appState: AppState
 
   var body: some View {
-    VStack {
-      Text("Look mom an app")
-        .padding()
-      Button {
-        self.appState.sessionToken = nil
-        keychain.delete("session_token")
-      } label: {
-        Text("Log out")
+    TabView {
+      Tab("Repertoire", systemImage: "music.note.list") {
+        RepertoireList()
+      }
+      Tab("Friends", systemImage: "person.2") {
+        FriendsList()
+      }
+      Tab("Profile", systemImage: "person.crop.circle") {
+        Profile()
       }
     }
   }
@@ -19,4 +20,5 @@ struct Main: View {
 
 #Preview {
   Main()
+    .environmentObject(AppState())
 }
