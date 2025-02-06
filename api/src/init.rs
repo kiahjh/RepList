@@ -1,8 +1,14 @@
 use crate::{
     db::Db,
-    handlers::{login::login, signup::signup},
+    handlers::{
+        get_repertoire::GetRepertoire, login::Login, signup::Signup, GetHandler, PostHandler,
+    },
+    types::fen_path,
 };
-use axum::{routing::post, Extension, Router};
+use axum::{
+    routing::{get, post},
+    Extension, Router,
+};
 use sqlx::postgres::PgPoolOptions;
 
 pub static mut DB: Option<Db> = None;
@@ -16,8 +22,9 @@ pub async fn run() {
     let db = Db::new(pool);
 
     let app = Router::new()
-        .route("/login", post(login))
-        .route("/signup", post(signup))
+        .route(&fen_path("/login"), post(Login::handle))
+        .route(&fen_path("/signup"), post(Signup::handle))
+        .route(&fen_path("/get-repertoire"), get(GetRepertoire::handle))
         .layer(Extension(db));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:4000").await.unwrap();

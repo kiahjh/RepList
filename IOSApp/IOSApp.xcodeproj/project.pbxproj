@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F2CFA6C2D1B10CD00084640 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0F2CFA6B2D1B10CD00084640 /* KeychainSwift */; };
+		0F69DC9B2D54F1800032CA21 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 0F69DC9A2D54F1800032CA21 /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F2CFA6C2D1B10CD00084640 /* KeychainSwift in Frameworks */,
+				0F69DC9B2D54F1800032CA21 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +117,7 @@
 			);
 			name = IOSApp;
 			packageProductDependencies = (
-				0F2CFA6B2D1B10CD00084640 /* KeychainSwift */,
+				0F69DC9A2D54F1800032CA21 /* ComposableArchitecture */,
 			);
 			productName = IOSApp;
 			productReference = 0F1878252D14F576007F2939 /* IOSApp.app */;
@@ -202,7 +202,7 @@
 			mainGroup = 0F18781C2D14F576007F2939;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				0F2CFA6A2D1B10CD00084640 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				0F69DC992D54F1800032CA21 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0F1878262D14F576007F2939 /* Products */;
@@ -338,6 +338,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -393,6 +394,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -421,7 +423,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiahjh.IOSApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -450,7 +451,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiahjh.IOSApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -467,7 +467,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiahjh.IOSAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IOSApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IOSApp";
 			};
@@ -485,7 +484,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiahjh.IOSAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IOSApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/IOSApp";
 			};
@@ -501,7 +499,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiahjh.IOSAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = IOSApp;
 			};
@@ -517,7 +514,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiahjh.IOSAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = IOSApp;
 			};
@@ -565,21 +561,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0F2CFA6A2D1B10CD00084640 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+		0F69DC992D54F1800032CA21 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/evgenyneu/keychain-swift";
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 24.0.0;
+				minimumVersion = 1.17.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0F2CFA6B2D1B10CD00084640 /* KeychainSwift */ = {
+		0F69DC9A2D54F1800032CA21 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0F2CFA6A2D1B10CD00084640 /* XCRemoteSwiftPackageReference "keychain-swift" */;
-			productName = KeychainSwift;
+			package = 0F69DC992D54F1800032CA21 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

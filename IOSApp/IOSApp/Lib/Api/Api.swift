@@ -1,9 +1,7 @@
-// Created by Fen v0.1.0 at 15:15:58 on 2025-01-08
+// Created by Fen v0.3.0 at 12:43:33 on 2025-02-06
 // Do not manually modify this file as it is automatically generated
 
 import Foundation
-
-let api = ApiClient(fetcher: Fetcher(endpoint: "http://localhost:4000"))
 
 struct ApiClient {
   var fetcher: Fetcher
@@ -39,7 +37,7 @@ struct Fetcher {
 
   func post<T: Decodable, U: Encodable>(
     to path: String,
-    with body: Input<U>,
+    with body: U,
     returning type: T.Type,
     sessionToken: String? = nil
   ) async throws -> Response<T> {
@@ -69,20 +67,16 @@ struct Fetcher {
 
 struct NoData: Decodable {}
 
-struct Input<T: Encodable>: Encodable {
-  let payload: T
-}
-
 struct ResponseType: Decodable {
   var type: String
 }
 
-enum Response<T: Decodable> {
+enum Response<T: Decodable & Sendable>: Sendable {
   case success(SuccessResponse<T>)
   case failure(FailureResponse)
 }
 
-struct SuccessResponse<T: Decodable>: Decodable {
+struct SuccessResponse<T: Decodable & Sendable>: Decodable, Sendable {
   let data: T
 }
 

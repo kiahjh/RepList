@@ -1,0 +1,26 @@
+name: "GetRepertoire"
+description: "Get a user's repertoire"
+authed: true
+
+---
+
+@output [Piece]
+
+---
+
+Piece {
+  id: UUID
+  title: String
+  familiarity: FamiliarityLevel
+  composer: String?
+  created_at: Date
+}
+
+@sqlxType
+FamiliarityLevel (
+  todo
+  learning
+  playable
+  good
+  mastered
+)

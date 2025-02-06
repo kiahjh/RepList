@@ -4,6 +4,7 @@ use init::run;
 mod db;
 mod handlers;
 mod init;
+mod logger;
 mod types;
 
 #[tokio::main]

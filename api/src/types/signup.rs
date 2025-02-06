@@ -1,9 +1,9 @@
-// Created by Fen v0.1.0 at 15:15:58 on 2025-01-08
+// Created by Fen v0.3.0 at 12:43:33 on 2025-02-06
 // Do not manually modify this file as it is automatically generated
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Input {
     pub email: String,

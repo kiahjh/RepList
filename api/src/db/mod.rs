@@ -1,8 +1,7 @@
+use crate::types::get_repertoire::Piece;
+use chrono::{DateTime, Utc};
 use sqlx::{Pool, Postgres};
-use tables::User;
 use uuid::Uuid;
-
-pub mod tables;
 
 #[derive(Clone)]
 pub struct Db {
@@ -43,4 +42,31 @@ impl Db {
 
         Ok(new_user)
     }
+
+    pub async fn get_songs(&self, session_token: Uuid) -> Result<Vec<Piece>, sqlx::Error> {
+        let songs = sqlx::query_as!(
+            Piece,
+            r#"
+                SELECT s.id, s.title, s.composer, s.created_at, us.familiarity as "familiarity: _"
+                FROM session_tokens st
+                JOIN user_songs us ON st.user_id = us.user_id
+                JOIN songs s ON us.song_id = s.id
+                WHERE st.id = $1;
+            "#,
+            session_token
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(songs)
+    }
+}
+
+#[derive(Debug)]
+pub struct User {
+    pub id: Uuid,
+    pub username: String,
+    pub hashed_password: String,
+    pub created_at: DateTime<Utc>,
+    pub email: String,
 }
