@@ -6,6 +6,8 @@ struct RepertoireList {
   @ObservableState
   struct State {
     var pieces: [Piece]
+    var searchText: String = ""
+    var searchFocused: Bool = false
     @Shared(.listSectionCollapsedState) var listSectionCollapsedState
   }
 
@@ -16,11 +18,13 @@ struct RepertoireList {
     case learned
   }
 
-  enum Action {
+  enum Action: BindableAction {
+    case binding(BindingAction<State>)
     case sectionHeadingTapped(ListSection)
   }
 
   var body: some ReducerOf<Self> {
+    BindingReducer()
     Reduce { state, action in
       switch action {
       case .sectionHeadingTapped(let section):
@@ -35,13 +39,16 @@ struct RepertoireList {
           state.$listSectionCollapsedState.withLock { $0.learned.toggle() }
         }
         return .none
+
+      case .binding:
+        return .none
       }
     }
   }
 }
 
 struct RepertoireListView: View {
-  var store: StoreOf<RepertoireList>
+  @Bindable var store: StoreOf<RepertoireList>
 
   var groupedPieces: GroupedPieces {
     GroupedPieces(self.store.pieces)
@@ -50,39 +57,55 @@ struct RepertoireListView: View {
   var body: some View {
     ZStack(alignment: .bottomTrailing) {
       ScrollView {
-        VStack(spacing: 0) {
-          PiecesListSection(
-            heading: "Currently learning",
-            pieces: self.groupedPieces.byFamiliarity(.learning),
-            isCollapsed: self.store.listSectionCollapsedState.learning
-          ) {
-            self.store.send(.sectionHeadingTapped(.learning))
+        if self.store.searchText.isEmpty {
+          VStack(spacing: 0) {
+            PiecesListSection(
+              heading: "Currently learning",
+              pieces: self.groupedPieces.byFamiliarity(.learning),
+              isCollapsed: self.store.listSectionCollapsedState.learning
+            ) {
+              self.store.send(.sectionHeadingTapped(.learning))
+            }
+            PiecesListSection(
+              heading: "Next up",
+              pieces: self.groupedPieces.byFamiliarity(.todo),
+              isCollapsed: self.store.listSectionCollapsedState.next
+            ) {
+              self.store.send(.sectionHeadingTapped(.next))
+            }
+            PiecesListSection(
+              heading: "Needing some work",
+              pieces: self.groupedPieces.byFamiliarity(.playable),
+              isCollapsed: self.store.listSectionCollapsedState.needsWork
+            ) {
+              self.store.send(.sectionHeadingTapped(.needsWork))
+            }
+            PiecesListSection(
+              heading: "Learned",
+              pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
+              isCollapsed: self.store.listSectionCollapsedState.learned
+            ) {
+              self.store.send(.sectionHeadingTapped(.learned))
+            }
           }
-          PiecesListSection(
-            heading: "Next up",
-            pieces: self.groupedPieces.byFamiliarity(.todo),
-            isCollapsed: self.store.listSectionCollapsedState.next
-          ) {
-            self.store.send(.sectionHeadingTapped(.next))
+          .frame(maxWidth: .infinity)
+          .padding(.top, 8)
+          .padding(.bottom, 120)
+        } else {
+          VStack {
+            ForEach(
+              self.store.pieces
+                .filter { $0.title.lowercased().contains(self.store.searchText.lowercased())
+                }
+            ) { piece in
+              PieceView(piece)
+            }
           }
-          PiecesListSection(
-            heading: "Needing some work",
-            pieces: self.groupedPieces.byFamiliarity(.playable),
-            isCollapsed: self.store.listSectionCollapsedState.needsWork
-          ) {
-            self.store.send(.sectionHeadingTapped(.needsWork))
-          }
-          PiecesListSection(
-            heading: "Learned",
-            pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
-            isCollapsed: self.store.listSectionCollapsedState.learned
-          ) {
-            self.store.send(.sectionHeadingTapped(.learned))
-          }
+          .frame(maxWidth: .infinity)
+          .padding(.horizontal)
+          .padding(.top, 20)
+          .padding(.bottom, 120)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 8)
-        .padding(.bottom, 120)
       }
       .background(.b50.opacity(0.6))
 
@@ -98,6 +121,7 @@ struct RepertoireListView: View {
       }
     }
     .navigationTitle("Repertoire")
+    .searchable(text: self.$store.searchText)
   }
 }
 
