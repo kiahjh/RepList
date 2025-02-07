@@ -1,9 +1,18 @@
+import ComposableArchitecture
 import Sharing
 import SwiftUI
 
 struct ContentView: View {
   var body: some View {
-    Text("hi")
+    NavigationStack {
+      RepertoireListView(
+        store: Store(initialState: RepertoireList.State(
+          pieces: Piece.list
+        )) {
+          RepertoireList()
+        }
+      )
+    }
   }
 }
 
