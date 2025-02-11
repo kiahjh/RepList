@@ -8,6 +8,13 @@ struct BigButton: View {
   var disabled: Bool = false
   var action: () -> Void
 
+  init(_ label: String, color: ColorType, disabled: Bool = false, action: @escaping () -> Void) {
+    self.label = label
+    self.color = color
+    self.disabled = disabled
+    self.action = action
+  }
+
   var body: some View {
     Button(action: self.action) {
       HStack {
@@ -18,19 +25,17 @@ struct BigButton: View {
       .padding(16)
       .font(.system(size: 20, weight: .bold))
       .foregroundStyle(
-        self.color == .primary ?
-          Color(self.cs, light: .b50, dark: .b50) :
-          Color(self.cs, light: .b500, dark: .b500)
+        self.color == .primary
+          ? Color(self.cs, light: .b50, dark: .b50) : Color(self.cs, light: .b500, dark: .b500)
       )
       .background(
-        self.color == .primary ?
-          Color(self.cs, light: .b500, dark: .b600) :
-          Color(self.cs, light: .b200, dark: .b850)
+        self.color == .primary
+          ? Color(self.cs, light: .b500, dark: .b600) : Color(self.cs, light: .b200, dark: .b850)
       )
       .cornerRadius(16)
     }
     .disabled(self.disabled)
-    .opacity(self.disabled ? 0.5 : 1)
+    .opacity(self.disabled ? 0.4 : 1)
   }
 
   enum ColorType {
@@ -41,10 +46,10 @@ struct BigButton: View {
 
 #Preview {
   VStack(spacing: 12) {
-    BigButton(label: "Get started", color: .primary) {}
-    BigButton(label: "Get started", color: .primary, disabled: true) {}
+    BigButton("Get started", color: .primary) {}
+    BigButton("Get started", color: .primary, disabled: true) {}
       .padding(.bottom, 40)
-    BigButton(label: "Log in", color: .secondary) {}
-    BigButton(label: "Log in", color: .secondary, disabled: true) {}
+    BigButton("Log in", color: .secondary) {}
+    BigButton("Log in", color: .secondary, disabled: true) {}
   }.padding()
 }

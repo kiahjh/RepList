@@ -4,10 +4,14 @@ import SwiftUI
 @Reducer
 struct RepertoireList {
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var pieces: [Piece]
     var searchText: String = ""
-    var searchFocused: Bool = false
+    var filteredPieces: [Piece] {
+      pieces.filter {
+        searchText.isEmpty ? true : $0.title.lowercased().contains(self.searchText.lowercased())
+      }
+    }
     @Shared(.listSectionCollapsedState) var listSectionCollapsedState
   }
 
@@ -51,65 +55,50 @@ struct RepertoireListView: View {
   @Bindable var store: StoreOf<RepertoireList>
 
   var groupedPieces: GroupedPieces {
-    GroupedPieces(self.store.pieces)
+    GroupedPieces(self.store.filteredPieces)
   }
 
   var body: some View {
     ZStack(alignment: .bottomTrailing) {
       ScrollView {
-        if self.store.searchText.isEmpty {
-          VStack(spacing: 0) {
-            PiecesListSection(
-              heading: "Currently learning",
-              pieces: self.groupedPieces.byFamiliarity(.learning),
-              isCollapsed: self.store.listSectionCollapsedState.learning
-            ) {
-              self.store.send(.sectionHeadingTapped(.learning))
-            }
-            PiecesListSection(
-              heading: "Next up",
-              pieces: self.groupedPieces.byFamiliarity(.todo),
-              isCollapsed: self.store.listSectionCollapsedState.next
-            ) {
-              self.store.send(.sectionHeadingTapped(.next))
-            }
-            PiecesListSection(
-              heading: "Needing some work",
-              pieces: self.groupedPieces.byFamiliarity(.playable),
-              isCollapsed: self.store.listSectionCollapsedState.needsWork
-            ) {
-              self.store.send(.sectionHeadingTapped(.needsWork))
-            }
-            PiecesListSection(
-              heading: "Learned",
-              pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
-              isCollapsed: self.store.listSectionCollapsedState.learned
-            ) {
-              self.store.send(.sectionHeadingTapped(.learned))
-            }
+        VStack(spacing: 0) {
+          PiecesListSection(
+            heading: "Currently learning",
+            pieces: self.groupedPieces.byFamiliarity(.learning),
+            isCollapsed: self.store.listSectionCollapsedState.learning
+          ) {
+            self.store.send(.sectionHeadingTapped(.learning))
           }
-          .frame(maxWidth: .infinity)
-          .padding(.top, 8)
-          .padding(.bottom, 120)
-        } else {
-          VStack {
-            ForEach(
-              self.store.pieces
-                .filter { $0.title.lowercased().contains(self.store.searchText.lowercased())
-                }
-            ) { piece in
-              PieceView(piece)
-            }
+          PiecesListSection(
+            heading: "Next up",
+            pieces: self.groupedPieces.byFamiliarity(.todo),
+            isCollapsed: self.store.listSectionCollapsedState.next
+          ) {
+            self.store.send(.sectionHeadingTapped(.next))
           }
-          .frame(maxWidth: .infinity)
-          .padding(.horizontal)
-          .padding(.top, 20)
-          .padding(.bottom, 120)
+          PiecesListSection(
+            heading: "Needing some work",
+            pieces: self.groupedPieces.byFamiliarity(.playable),
+            isCollapsed: self.store.listSectionCollapsedState.needsWork
+          ) {
+            self.store.send(.sectionHeadingTapped(.needsWork))
+          }
+          PiecesListSection(
+            heading: "Learned",
+            pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
+            isCollapsed: self.store.listSectionCollapsedState.learned
+          ) {
+            self.store.send(.sectionHeadingTapped(.learned))
+          }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 8)
+        .padding(.bottom, 120)
       }
       .background(.b50.opacity(0.6))
 
-      Button {} label: {
+      Button {
+      } label: {
         Image(systemName: "plus")
           .foregroundStyle(.white)
           .font(.system(size: 28, weight: .medium))
@@ -192,9 +181,11 @@ struct GroupedPieces {
 #Preview {
   NavigationStack {
     RepertoireListView(
-      store: Store(initialState: RepertoireList.State(
-        pieces: Piece.list
-      )) {
+      store: Store(
+        initialState: RepertoireList.State(
+          pieces: Piece.list
+        )
+      ) {
         RepertoireList()
       }
     )

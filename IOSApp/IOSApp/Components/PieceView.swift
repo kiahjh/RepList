@@ -2,7 +2,7 @@ import SwiftUI
 
 struct PieceView: View {
   let piece: Piece
-  
+
   var body: some View {
     HStack {
       VStack(alignment: .leading) {
@@ -33,11 +33,11 @@ struct PieceView: View {
     .cornerRadius(10)
     .shadow(color: .b600.opacity(0.2), radius: 12)
   }
-  
+
   init(_ piece: Piece) {
     self.piece = piece
   }
-  
+
   func familiarityIcon(_ familiarity: FamiliarityLevel) -> String {
     switch familiarity {
     case .learning:
@@ -50,7 +50,7 @@ struct PieceView: View {
     case .mastered:
       "Mastered"
     default:
-      "" // this shouldn't happen
+      ""  // this shouldn't happen
     }
   }
 }

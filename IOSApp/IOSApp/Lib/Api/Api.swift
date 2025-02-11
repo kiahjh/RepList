@@ -1,20 +1,30 @@
-// Created by Fen v0.3.0 at 12:43:33 on 2025-02-06
+// Created by Fen v0.3.2 at 15:40:59 on 2025-02-11
 // Do not manually modify this file as it is automatically generated
 
 import Foundation
 
-struct ApiClient {
-  var fetcher: Fetcher
+struct APIClient {
+  var fetcher: any Fetcher
 }
 
-struct Fetcher {
+protocol Fetcher: Sendable {
+  func get<T>(from path: String, sessionToken: String?) async throws -> Response<T>
+  func post<T: Decodable, U: Encodable>(
+    to path: String,
+    with body: U,
+    returning type: T.Type,
+    sessionToken: String?
+  ) async throws -> Response<T>
+}
+
+struct LiveFetcher: Fetcher {
   var endpoint: String
 
   let jsonEncoder = JSONEncoder()
   let jsonDecoder = JSONDecoder()
 
   func get<T>(from path: String, sessionToken: String?) async throws -> Response<T>
-    where T: Decodable {
+  where T: Decodable {
     let url = URL(string: self.endpoint + path)!
     var request = URLRequest(url: url)
     request.httpMethod = "GET"

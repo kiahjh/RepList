@@ -6,8 +6,7 @@ extension SharedKey where Self == AppStorageKey<String?>.Default {
   }
 }
 
-
-struct ListSectionCollapsedState: Codable {
+struct ListSectionCollapsedState: Codable, Equatable {
   var learning: Bool
   var next: Bool
   var needsWork: Bool
@@ -20,7 +19,8 @@ extension SharedKey where Self == FileStorageKey<ListSectionCollapsedState>.Defa
       .fileStorage(
         .documentsDirectory.appending(component: "__replist_listSectionCollapsedState.json")
       ),
-      default: ListSectionCollapsedState(learning: false, next: false, needsWork: false, learned: false)
+      default: ListSectionCollapsedState(
+        learning: false, next: false, needsWork: false, learned: false)
     ]
   }
 }
