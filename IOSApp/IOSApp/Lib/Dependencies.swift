@@ -29,6 +29,8 @@ struct SuccessfulFetcher: Fetcher {
     switch trailingPath {
     case "signup":
       return .success(SuccessResponse(data: "test-session-token" as! T))
+    case "login":
+      return .success(SuccessResponse(data: "test-session-token" as! T))
     default:
       throw SuccessfulFetcherError()
     }
