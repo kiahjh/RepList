@@ -3,16 +3,26 @@ import SwiftUI
 
 @Reducer
 struct RepertoireList {
+  @Reducer
+  enum Destination {
+    case userDetail(UserDetail)
+    case pieceDetail(PieceDetail)
+  }
+
   @ObservableState
-  struct State: Equatable {
+  struct State {  // TODO: Add Equatable conformance
+    @Shared(.listSectionCollapsedState) var listSectionCollapsedState
+
+    @Presents var destination: Destination.State?
+
     var pieces: [Piece]
     var searchText: String = ""
+
     var filteredPieces: [Piece] {
       pieces.filter {
         searchText.isEmpty ? true : $0.title.lowercased().contains(self.searchText.lowercased())
       }
     }
-    @Shared(.listSectionCollapsedState) var listSectionCollapsedState
   }
 
   enum ListSection {
@@ -24,13 +34,26 @@ struct RepertoireList {
 
   enum Action: BindableAction {
     case binding(BindingAction<State>)
+    case destination(PresentationAction<Destination.Action>)
+    case pieceTapped(Piece)
     case sectionHeadingTapped(ListSection)
+    case userDetailTapped
   }
 
   var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
+      case .binding:
+        return .none
+
+      case .destination:
+        return .none
+
+      case .pieceTapped(let piece):
+        state.destination = .pieceDetail(PieceDetail.State(piece: piece))
+        return .none
+
       case .sectionHeadingTapped(let section):
         switch section {
         case .learning:
@@ -44,15 +67,18 @@ struct RepertoireList {
         }
         return .none
 
-      case .binding:
+      case .userDetailTapped:
+        state.destination = .userDetail(UserDetail.State())
         return .none
       }
     }
+    .ifLet(\.$destination, action: \.destination)
   }
 }
 
 struct RepertoireListView: View {
   @Bindable var store: StoreOf<RepertoireList>
+  @Namespace private var namespace
 
   var groupedPieces: GroupedPieces {
     GroupedPieces(self.store.filteredPieces)
@@ -65,29 +91,44 @@ struct RepertoireListView: View {
           PiecesListSection(
             heading: "Currently learning",
             pieces: self.groupedPieces.byFamiliarity(.learning),
-            isCollapsed: self.store.listSectionCollapsedState.learning
+            isCollapsed: self.store.listSectionCollapsedState.learning,
+            namespace: namespace
           ) {
+            self.store.send(.pieceTapped($0))
+          } onCollapse: {
             self.store.send(.sectionHeadingTapped(.learning))
           }
+          
           PiecesListSection(
             heading: "Next up",
             pieces: self.groupedPieces.byFamiliarity(.todo),
-            isCollapsed: self.store.listSectionCollapsedState.next
+            isCollapsed: self.store.listSectionCollapsedState.next,
+            namespace: namespace
           ) {
+            self.store.send(.pieceTapped($0))
+          } onCollapse: {
             self.store.send(.sectionHeadingTapped(.next))
           }
+          
           PiecesListSection(
             heading: "Needing some work",
             pieces: self.groupedPieces.byFamiliarity(.playable),
-            isCollapsed: self.store.listSectionCollapsedState.needsWork
+            isCollapsed: self.store.listSectionCollapsedState.needsWork,
+            namespace: namespace
           ) {
+            self.store.send(.pieceTapped($0))
+          } onCollapse: {
             self.store.send(.sectionHeadingTapped(.needsWork))
           }
+          
           PiecesListSection(
             heading: "Learned",
             pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
-            isCollapsed: self.store.listSectionCollapsedState.learned
+            isCollapsed: self.store.listSectionCollapsedState.learned,
+            namespace: namespace
           ) {
+            self.store.send(.pieceTapped($0))
+          } onCollapse: {
             self.store.send(.sectionHeadingTapped(.learned))
           }
         }
@@ -111,6 +152,43 @@ struct RepertoireListView: View {
     }
     .navigationTitle("Repertoire")
     .searchable(text: self.$store.searchText)
+    .toolbar {
+      ToolbarItem(placement: .topBarLeading) {
+        Button {
+        } label: {
+          Image(systemName: "ellipsis")
+            .font(.system(size: 13, weight: .semibold))
+            .frame(width: 30, height: 30)
+            .background(.b200.opacity(0.6))
+            .cornerRadius(15)
+        }
+      }
+      ToolbarItem(placement: .topBarTrailing) {
+        Button {
+          self.store.send(.userDetailTapped)
+        } label: {
+          Image(systemName: "person.fill")
+            .font(.system(size: 13))
+            .frame(width: 30, height: 30)
+            .background(.b200.opacity(0.6))
+            .cornerRadius(15)
+        }
+      }
+    }
+    .navigationDestination(
+      item: self.$store.scope(state: \.destination?.userDetail, action: \.destination.userDetail)
+    ) {
+      store in
+      UserDetailView(store: store)
+    }
+    .navigationDestination(
+      item: self.$store.scope(state: \.destination?.pieceDetail, action: \.destination.pieceDetail)
+    ) {
+      store in
+      PieceDetailView(store: store)
+        .navigationTransition(.zoom(sourceID: store.piece.id, in: self.namespace))
+        .navigationTitle(store.piece.title)
+    }
   }
 }
 
@@ -118,7 +196,25 @@ struct PiecesListSection: View {
   let heading: String
   let pieces: [Piece]
   let isCollapsed: Bool
+  let namespace: Namespace.ID
+  let onPieceTap: (Piece) -> Void
   var onCollapse: () -> Void
+
+  init(
+    heading: String,
+    pieces: [Piece],
+    isCollapsed: Bool,
+    namespace: Namespace.ID,
+    onPieceTap: @escaping (Piece) -> Void,
+    onCollapse: @escaping () -> Void
+  ) {
+    self.heading = heading
+    self.pieces = pieces
+    self.isCollapsed = isCollapsed
+    self.namespace = namespace
+    self.onPieceTap = onPieceTap
+    self.onCollapse = onCollapse
+  }
 
   var body: some View {
     if !self.pieces.isEmpty {
@@ -143,7 +239,13 @@ struct PiecesListSection: View {
 
         VStack {
           ForEach(self.pieces) { piece in
-            PieceView(piece)
+            Button {
+              self.onPieceTap(piece)
+            } label: {
+              PieceView(piece)
+                .matchedTransitionSource(id: piece.id, in: self.namespace)
+                .shadow(color: .b600.opacity(0.2), radius: 12)
+            }
           }
         }
         .padding(.top, 10)

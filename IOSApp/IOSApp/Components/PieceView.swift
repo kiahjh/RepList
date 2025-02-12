@@ -8,6 +8,7 @@ struct PieceView: View {
       VStack(alignment: .leading) {
         Text(self.piece.title)
           .font(.system(size: 18, weight: .semibold))
+          .foregroundStyle(.black)
         if let composer = self.piece.composer {
           Text("by \(composer)")
             .font(.system(size: 14, weight: .regular))
@@ -31,7 +32,6 @@ struct PieceView: View {
     .padding(.vertical, 8)
     .background(.white)
     .cornerRadius(10)
-    .shadow(color: .b600.opacity(0.2), radius: 12)
   }
 
   init(_ piece: Piece) {

@@ -5,6 +5,7 @@ import SwiftUI
 struct Unauthed {
   @ObservableState
   struct State: Equatable {
+    // FIX: should be an enum (https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/treebasednavigation#Enum-state)
     @Presents var signup: Signup.State?
     @Presents var login: Login.State?
   }

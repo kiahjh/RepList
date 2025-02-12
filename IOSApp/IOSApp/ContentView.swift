@@ -5,11 +5,9 @@ import SwiftUI
 struct ContentView: View {
   var body: some View {
     NavigationStack {
-      RepertoireListView(
-        store: Store(initialState: RepertoireList.State(
-          pieces: Piece.list
-        )) {
-          RepertoireList()
+      AppView(
+        store: Store(initialState: AppFeature.State()) {
+          AppFeature()
         }
       )
     }

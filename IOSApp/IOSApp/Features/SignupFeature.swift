@@ -23,7 +23,7 @@ struct Signup {
 
   enum Action: BindableAction {
     case binding(BindingAction<State>)
-    case loginButtonTapped
+    case signupButtonTapped
     case setErrorMessage(String)
     case setSessionToken(String)
   }
@@ -34,7 +34,7 @@ struct Signup {
       switch action {
       case .binding:
         return .none
-      case .loginButtonTapped:
+      case .signupButtonTapped:
         return .run { [state] send in
           do {
             let res = try await apiClient.signup(
@@ -102,8 +102,8 @@ struct SignupView: View {
         }
       }
       Spacer()
-      BigButton("Log in", color: .primary, disabled: !store.buttonEnabled) {
-        self.store.send(.loginButtonTapped)
+      BigButton("Sign up", color: .primary, disabled: !store.buttonEnabled) {
+        self.store.send(.signupButtonTapped)
       }
     }
     .padding(.top, 30)
