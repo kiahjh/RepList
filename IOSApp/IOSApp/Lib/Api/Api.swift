@@ -1,4 +1,4 @@
-// Created by Fen v0.3.2 at 15:40:59 on 2025-02-11
+// Created by Fen v0.4.0 at 10:29:33 on 2025-02-12
 // Do not manually modify this file as it is automatically generated
 
 import Foundation
@@ -38,10 +38,10 @@ struct LiveFetcher: Fetcher {
     let tag = try self.jsonDecoder.decode(ResponseType.self, from: data)
     if tag.type == "success" {
       let response = try self.jsonDecoder.decode(SuccessResponse<T>.self, from: data)
-      return .success(SuccessResponse(data: response.data))
+      return .success(response.data)
     } else {
       let response = try self.jsonDecoder.decode(FailureResponse.self, from: data)
-      return .failure(FailureResponse(message: response.message, status: response.status))
+      return .failure(message: response.message, status: response.status)
     }
   }
 
@@ -67,10 +67,10 @@ struct LiveFetcher: Fetcher {
     let tag = try self.jsonDecoder.decode(ResponseType.self, from: data)
     if tag.type == "success" {
       let response = try self.jsonDecoder.decode(SuccessResponse<T>.self, from: data)
-      return .success(SuccessResponse(data: response.data))
+      return .success(response.data)
     } else {
       let response = try self.jsonDecoder.decode(FailureResponse.self, from: data)
-      return .failure(FailureResponse(message: response.message, status: response.status))
+      return .failure(message: response.message, status: response.status)
     }
   }
 }
@@ -82,8 +82,8 @@ struct ResponseType: Decodable {
 }
 
 enum Response<T: Decodable & Sendable>: Sendable {
-  case success(SuccessResponse<T>)
-  case failure(FailureResponse)
+  case success(T)
+  case failure(message: String, status: Int)
 }
 
 struct SuccessResponse<T: Decodable & Sendable>: Decodable, Sendable {

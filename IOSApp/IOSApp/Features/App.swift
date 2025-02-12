@@ -1,9 +1,12 @@
 import ComposableArchitecture
+import SwiftUI
 
 @Reducer
 struct AppFeature {
   @ObservableState
-  struct State {}
+  struct State {
+    @Shared(.sessionToken) var sessionToken
+  }
 
   enum Action {}
 
@@ -12,4 +15,41 @@ struct AppFeature {
       switch action {}
     }
   }
+}
+
+struct AppView: View {
+  let store: StoreOf<AppFeature>
+
+  var body: some View {
+    // TODO: for testability, this should be state driven in the reducer
+    if store.sessionToken != nil {
+      NavigationStack {
+        RepertoireListView(
+          store: Store(
+            initialState: RepertoireList.State(
+              pieces: Piece.list
+            )
+          ) {
+            RepertoireList()
+          }
+        )
+      }
+    } else {
+      UnauthedView(
+        store: Store(
+          initialState: Unauthed.State()
+        ) {
+          Unauthed()
+        }
+      )
+    }
+  }
+}
+
+#Preview {
+  AppView(
+    store: Store(initialState: AppFeature.State()) {
+      AppFeature()
+    }
+  )
 }

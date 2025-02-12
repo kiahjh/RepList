@@ -28,9 +28,9 @@ struct SuccessfulFetcher: Fetcher {
     let trailingPath = path.split(separator: "/").last!
     switch trailingPath {
     case "signup":
-      return .success(SuccessResponse(data: "test-session-token" as! T))
+      return .success("test-session-token" as! T)
     case "login":
-      return .success(SuccessResponse(data: "test-session-token" as! T))
+      return .success("test-session-token" as! T)
     default:
       throw SuccessfulFetcherError()
     }
@@ -39,7 +39,7 @@ struct SuccessfulFetcher: Fetcher {
 
 struct FailingFetcher: Fetcher {
   func get<T>(from path: String, sessionToken: String?) async throws -> Response<T> {
-    return .failure(FailureResponse(message: "test-error", status: 400))
+    return .failure(message: "test-error", status: 400)
   }
 
   func post<T: Decodable, U: Encodable>(
@@ -48,6 +48,6 @@ struct FailingFetcher: Fetcher {
     returning type: T.Type,
     sessionToken: String?
   ) async throws -> Response<T> {
-    return .failure(FailureResponse(message: "test-error", status: 400))
+    return .failure(message: "test-error", status: 400)
   }
 }

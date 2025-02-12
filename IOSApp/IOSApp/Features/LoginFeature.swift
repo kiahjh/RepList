@@ -40,10 +40,10 @@ struct Login {
               password: state.password
             )
             switch res {
-            case .success(let value):
-              await send(.setSessionToken(value.data))
-            case .failure(let error):
-              await send(.setErrorMessage(error.message))
+            case .success(let token):
+              await send(.setSessionToken(token))
+            case .failure(let message, _):
+              await send(.setErrorMessage(message))
             }
           } catch {
             await send(.setErrorMessage(error.localizedDescription))
