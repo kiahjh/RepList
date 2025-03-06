@@ -26,9 +26,7 @@ struct AppView: View {
       NavigationStack {
         RepertoireListView(
           store: Store(
-            initialState: RepertoireList.State(
-              pieces: Piece.list
-            )
+            initialState: RepertoireList.State()
           ) {
             RepertoireList()
           }

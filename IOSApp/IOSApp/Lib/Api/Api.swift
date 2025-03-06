@@ -1,10 +1,36 @@
-// Created by Fen v0.4.0 at 10:29:33 on 2025-02-12
+// Created by Fen v0.5.3 at 14:55:53 on 2025-03-05
 // Do not manually modify this file as it is automatically generated
 
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct APIClient {
   var fetcher: any Fetcher
+
+  static func encodeAsData(_ value: Encodable) throws -> Data {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return try encoder.encode(value)
+  }
+
+  static func encodeAsString(_ value: Encodable) throws -> String {
+    let data = try self.encodeAsData(value)
+    return String(data: data, encoding: .utf8)!
+  }
+
+  static func decode<T: Decodable>(_ data: Data, type: T.Type) throws -> T {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601withOptionalFractionalSeconds
+    return try decoder.decode(T.self, from: data)
+  }
+
+  static func decode<T: Decodable>(_ string: String, type: T.Type) throws -> T {
+    let data = string.data(using: .utf8)!
+    return try self.decode(data, type: T.self)
+  }
 }
 
 protocol Fetcher: Sendable {
@@ -20,9 +46,6 @@ protocol Fetcher: Sendable {
 struct LiveFetcher: Fetcher {
   var endpoint: String
 
-  let jsonEncoder = JSONEncoder()
-  let jsonDecoder = JSONDecoder()
-
   func get<T>(from path: String, sessionToken: String?) async throws -> Response<T>
   where T: Decodable {
     let url = URL(string: self.endpoint + path)!
@@ -34,13 +57,13 @@ struct LiveFetcher: Fetcher {
     }
 
     let (data, _) = try await URLSession.shared.data(for: request)
+    let tag = try APIClient.decode(data, type: ResponseType.self)
 
-    let tag = try self.jsonDecoder.decode(ResponseType.self, from: data)
     if tag.type == "success" {
-      let response = try self.jsonDecoder.decode(SuccessResponse<T>.self, from: data)
-      return .success(response.data)
+      let response = try APIClient.decode(data, type: SuccessResponse<T>.self)
+      return .success(response.value)
     } else {
-      let response = try self.jsonDecoder.decode(FailureResponse.self, from: data)
+      let response = try APIClient.decode(data, type: FailureResponse.self)
       return .failure(message: response.message, status: response.status)
     }
   }
@@ -59,17 +82,17 @@ struct LiveFetcher: Fetcher {
       request.setValue("Bearer \(sessionToken)", forHTTPHeaderField: "Authorization")
     }
 
-    let body = try self.jsonEncoder.encode(body)
+    let body = try APIClient.encodeAsData(body)
     request.httpBody = body
 
     let (data, _) = try await URLSession.shared.data(for: request)
 
-    let tag = try self.jsonDecoder.decode(ResponseType.self, from: data)
+    let tag = try APIClient.decode(data, type: ResponseType.self)
     if tag.type == "success" {
-      let response = try self.jsonDecoder.decode(SuccessResponse<T>.self, from: data)
-      return .success(response.data)
+      let response = try APIClient.decode(data, type: SuccessResponse<T>.self)
+      return .success(response.value)
     } else {
-      let response = try self.jsonDecoder.decode(FailureResponse.self, from: data)
+      let response = try APIClient.decode(data, type: FailureResponse.self)
       return .failure(message: response.message, status: response.status)
     }
   }
@@ -81,16 +104,31 @@ struct ResponseType: Decodable {
   var type: String
 }
 
-enum Response<T: Decodable & Sendable>: Sendable {
+enum Response<T: Decodable & Sendable>: Decodable, Sendable {
   case success(T)
   case failure(message: String, status: Int)
 }
 
 struct SuccessResponse<T: Decodable & Sendable>: Decodable, Sendable {
-  let data: T
+  let value: T
 }
 
 struct FailureResponse: Decodable {
   let message: String
   let status: Int
+}
+
+extension ParseStrategy where Self == Date.ISO8601FormatStyle {
+  static var iso8601withFractionalSeconds: Self { .init(includingFractionalSeconds: true) }
+}
+
+extension JSONDecoder.DateDecodingStrategy {
+  static let iso8601withOptionalFractionalSeconds = custom {
+    let string = try $0.singleValueContainer().decode(String.self)
+    do {
+      return try .init(string, strategy: .iso8601withFractionalSeconds)
+    } catch {
+      return try .init(string, strategy: .iso8601)
+    }
+  }
 }

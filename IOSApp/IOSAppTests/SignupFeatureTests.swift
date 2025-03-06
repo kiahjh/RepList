@@ -28,7 +28,7 @@ struct SignupFeatureTests {
       $0.username = "foo_87"
     }
     
-    await store.send(.loginButtonTapped)
+    await store.send(.signupButtonTapped)
     await store.receive(\.setSessionToken) {
       $0.$sessionToken.withLock { $0 = "test-session-token" }
     }
@@ -59,7 +59,7 @@ struct SignupFeatureTests {
       $0.username = "foo_87"
     }
     
-    await store.send(.loginButtonTapped)
+    await store.send(.signupButtonTapped)
     await store.receive(\.setErrorMessage) {
       $0.errorMessage = "test-error"
     }

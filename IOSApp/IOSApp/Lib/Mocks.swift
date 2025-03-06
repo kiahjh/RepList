@@ -1,3 +1,4 @@
+import ComposableArchitecture
 import Foundation
 
 extension Piece {
@@ -6,17 +7,20 @@ extension Piece {
     composer: String? = "Turlough O'Carolan",
     familiarity: FamiliarityLevel = .good
   ) -> Piece {
-    Piece(
-      id: UUID(),
+    @Dependency(\.uuid) var uuid
+    @Dependency(\.date) var date
+
+    return Piece(
+      id: uuid(),
       title: title,
       familiarity: familiarity,
       composer: composer,
-      createdAt: Date()
+      createdAt: date()
     )
   }
 
   static var list: [Piece] {
-    [
+    return [
       Piece.example(
         title: "The Boyne Water",
         composer: nil,

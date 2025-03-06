@@ -1,4 +1,4 @@
-// Created by Fen v0.4.0 at 10:29:33 on 2025-02-12
+// Created by Fen v0.5.3 at 14:55:53 on 2025-03-05
 // Do not manually modify this file as it is automatically generated
 
 pub mod get_repertoire;
@@ -15,8 +15,8 @@ pub enum Response<T> {
 }
 
 impl<T> Response<T> {
-    pub const fn success(data: T) -> Self {
-        Self::Success(SuccessResponse { data })
+    pub const fn success(value: T) -> Self {
+        Self::Success(SuccessResponse { value })
     }
 
     pub fn failure(status: isize, message: &str) -> Self {
@@ -29,7 +29,7 @@ impl<T> Response<T> {
 
 #[derive(Serialize, Deserialize)]
 pub struct SuccessResponse<T> {
-    pub data: T,
+    pub value: T,
 }
 
 #[derive(Serialize, Deserialize)]

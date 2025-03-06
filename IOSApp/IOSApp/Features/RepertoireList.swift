@@ -3,6 +3,8 @@ import SwiftUI
 
 @Reducer
 struct RepertoireList {
+  @Dependency(\.apiClient) var apiClient
+
   @Reducer
   enum Destination {
     case userDetail(UserDetail)
@@ -10,13 +12,19 @@ struct RepertoireList {
   }
 
   @ObservableState
-  struct State {  // TODO: Add Equatable conformance
+  struct State: Equatable {
+    static func == (lhs: RepertoireList.State, rhs: RepertoireList.State) -> Bool {
+      lhs.pieces == rhs.pieces && lhs.searchText == rhs.searchText && lhs.isLoading == rhs.isLoading
+    }
+
     @Shared(.listSectionCollapsedState) var listSectionCollapsedState
+    @Shared(.sessionToken) var sessionToken
 
     @Presents var destination: Destination.State?
 
-    var pieces: [Piece]
+    var pieces: [Piece] = []
     var searchText: String = ""
+    var isLoading = false
 
     var filteredPieces: [Piece] {
       pieces.filter {
@@ -35,9 +43,12 @@ struct RepertoireList {
   enum Action: BindableAction {
     case binding(BindingAction<State>)
     case destination(PresentationAction<Destination.Action>)
+    case loadPieces
+    case piecesLoaded([Piece])
     case pieceTapped(Piece)
     case sectionHeadingTapped(ListSection)
     case userDetailTapped
+    case viewAppeared
   }
 
   var body: some ReducerOf<Self> {
@@ -48,6 +59,26 @@ struct RepertoireList {
         return .none
 
       case .destination:
+        return .none
+
+      case .loadPieces:
+        state.isLoading = true
+        return .run { [state] send in
+          guard let sessionToken = state.sessionToken else { return }
+          // TODO: can throw (do/catch it)
+          let res = try await apiClient.getRepertoire(sessionToken: sessionToken)
+          switch res {
+          case let .success(pieces):
+            await send(.piecesLoaded(pieces))
+          case .failure:
+            // TODO: deal with error
+            print("oops")
+          }
+        }
+
+      case .piecesLoaded(let pieces):
+        state.pieces = pieces
+        state.isLoading = false
         return .none
 
       case .pieceTapped(let piece):
@@ -70,6 +101,14 @@ struct RepertoireList {
       case .userDetailTapped:
         state.destination = .userDetail(UserDetail.State())
         return .none
+
+      case .viewAppeared:
+        if state.pieces.isEmpty {
+          return .run { send in
+            await send(.loadPieces)
+          }
+        }
+        return .none
       }
     }
     .ifLet(\.$destination, action: \.destination)
@@ -87,54 +126,70 @@ struct RepertoireListView: View {
   var body: some View {
     ZStack(alignment: .bottomTrailing) {
       ScrollView {
-        VStack(spacing: 0) {
-          PiecesListSection(
-            heading: "Currently learning",
-            pieces: self.groupedPieces.byFamiliarity(.learning),
-            isCollapsed: self.store.listSectionCollapsedState.learning,
-            namespace: namespace
-          ) {
-            self.store.send(.pieceTapped($0))
-          } onCollapse: {
-            self.store.send(.sectionHeadingTapped(.learning))
+        if self.store.isLoading {
+          HStack {
+            Spacer()
+            VStack(spacing: 10) {
+              Spacer()
+              ProgressView()
+              Text("Loading your pieces...")
+                .font(.system(size: 16, weight: .regular))
+                .foregroundStyle(.black.opacity(0.6))
+              Spacer()
+            }
+            Spacer()
           }
-          
-          PiecesListSection(
-            heading: "Next up",
-            pieces: self.groupedPieces.byFamiliarity(.todo),
-            isCollapsed: self.store.listSectionCollapsedState.next,
-            namespace: namespace
-          ) {
-            self.store.send(.pieceTapped($0))
-          } onCollapse: {
-            self.store.send(.sectionHeadingTapped(.next))
+          .padding(.top, 60)
+        } else {
+          VStack(spacing: 0) {
+            PiecesListSection(
+              heading: "Currently learning",
+              pieces: self.groupedPieces.byFamiliarity(.learning),
+              isCollapsed: self.store.listSectionCollapsedState.learning,
+              namespace: namespace
+            ) {
+              self.store.send(.pieceTapped($0))
+            } onCollapse: {
+              self.store.send(.sectionHeadingTapped(.learning))
+            }
+
+            PiecesListSection(
+              heading: "Next up",
+              pieces: self.groupedPieces.byFamiliarity(.todo),
+              isCollapsed: self.store.listSectionCollapsedState.next,
+              namespace: namespace
+            ) {
+              self.store.send(.pieceTapped($0))
+            } onCollapse: {
+              self.store.send(.sectionHeadingTapped(.next))
+            }
+
+            PiecesListSection(
+              heading: "Needing some work",
+              pieces: self.groupedPieces.byFamiliarity(.playable),
+              isCollapsed: self.store.listSectionCollapsedState.needsWork,
+              namespace: namespace
+            ) {
+              self.store.send(.pieceTapped($0))
+            } onCollapse: {
+              self.store.send(.sectionHeadingTapped(.needsWork))
+            }
+
+            PiecesListSection(
+              heading: "Learned",
+              pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
+              isCollapsed: self.store.listSectionCollapsedState.learned,
+              namespace: namespace
+            ) {
+              self.store.send(.pieceTapped($0))
+            } onCollapse: {
+              self.store.send(.sectionHeadingTapped(.learned))
+            }
           }
-          
-          PiecesListSection(
-            heading: "Needing some work",
-            pieces: self.groupedPieces.byFamiliarity(.playable),
-            isCollapsed: self.store.listSectionCollapsedState.needsWork,
-            namespace: namespace
-          ) {
-            self.store.send(.pieceTapped($0))
-          } onCollapse: {
-            self.store.send(.sectionHeadingTapped(.needsWork))
-          }
-          
-          PiecesListSection(
-            heading: "Learned",
-            pieces: self.groupedPieces.byFamiliarity([.good, .mastered]),
-            isCollapsed: self.store.listSectionCollapsedState.learned,
-            namespace: namespace
-          ) {
-            self.store.send(.pieceTapped($0))
-          } onCollapse: {
-            self.store.send(.sectionHeadingTapped(.learned))
-          }
+          .frame(maxWidth: .infinity)
+          .padding(.top, 8)
+          .padding(.bottom, 120)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 8)
-        .padding(.bottom, 120)
       }
       .background(.b50.opacity(0.6))
 
@@ -149,6 +204,9 @@ struct RepertoireListView: View {
           .padding(20)
           .shadow(color: .b700.opacity(0.3), radius: 12, x: 0, y: 8)
       }
+    }
+    .onAppear {
+      self.store.send(.viewAppeared)
     }
     .navigationTitle("Repertoire")
     .searchable(text: self.$store.searchText)
@@ -281,12 +339,12 @@ struct GroupedPieces {
 }
 
 #Preview {
+  @Shared(.sessionToken) var sessionToken = "0484ad74-cf44-4fd2-8547-d85ecd3174b4"
+
   NavigationStack {
     RepertoireListView(
       store: Store(
-        initialState: RepertoireList.State(
-          pieces: Piece.list
-        )
+        initialState: RepertoireList.State()
       ) {
         RepertoireList()
       }
