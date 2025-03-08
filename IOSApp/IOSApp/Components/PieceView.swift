@@ -1,15 +1,17 @@
 import SwiftUI
 
 struct PieceView: View {
-  let piece: Piece
-
+  let title: String
+  let composer: String?
+  let familiarity: FamiliarityLevel?
+  
   var body: some View {
     HStack {
       VStack(alignment: .leading) {
-        Text(self.piece.title)
+        Text(self.title)
           .font(.system(size: 18, weight: .semibold))
           .foregroundStyle(.black)
-        if let composer = self.piece.composer {
+        if let composer = self.composer {
           Text("by \(composer)")
             .font(.system(size: 14, weight: .regular))
             .italic()
@@ -17,14 +19,16 @@ struct PieceView: View {
         }
       }
       Spacer()
-      if self.piece.familiarity == .todo {
-        Image(systemName: "circle.dashed")
-          .font(.system(size: 16, weight: .medium))
-          .foregroundStyle(.black.opacity(0.2))
-      } else {
-        Image(self.familiarityIcon(self.piece.familiarity))
-          .resizable()
-          .frame(width: 24, height: 18)
+      if let familiarity = self.familiarity {
+        if familiarity == .todo {
+          Image(systemName: "circle.dashed")
+            .font(.system(size: 16, weight: .medium))
+            .foregroundStyle(.black.opacity(0.2))
+        } else {
+          Image(self.familiarityIcon(familiarity))
+            .resizable()
+            .frame(width: 24, height: 18)
+        }
       }
     }
     .padding(.leading, 12)
@@ -34,8 +38,10 @@ struct PieceView: View {
     .cornerRadius(10)
   }
 
-  init(_ piece: Piece) {
-    self.piece = piece
+  init(title: String, composer: String?, familiarity: FamiliarityLevel? = nil) {
+    self.title = title
+    self.composer = composer
+    self.familiarity = familiarity
   }
 
   func familiarityIcon(_ familiarity: FamiliarityLevel) -> String {
@@ -43,7 +49,6 @@ struct PieceView: View {
     case .learning:
       "Learning"
     case .playable:
-
       "Playable"
     case .good:
       "Good"

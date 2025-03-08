@@ -9,10 +9,12 @@ struct RepertoireList {
   enum Destination {
     case userDetail(UserDetail)
     case pieceDetail(PieceDetail)
+    case addPiece(AddPiece)
   }
 
   @ObservableState
   struct State: Equatable {
+    // TODO: make sure this is actually needed
     static func == (lhs: RepertoireList.State, rhs: RepertoireList.State) -> Bool {
       lhs.pieces == rhs.pieces && lhs.searchText == rhs.searchText && lhs.isLoading == rhs.isLoading
     }
@@ -41,6 +43,7 @@ struct RepertoireList {
   }
 
   enum Action: BindableAction {
+    case addPieceButtonTapped
     case binding(BindingAction<State>)
     case destination(PresentationAction<Destination.Action>)
     case loadPieces
@@ -55,6 +58,11 @@ struct RepertoireList {
     BindingReducer()
     Reduce { state, action in
       switch action {
+      case .addPieceButtonTapped:
+        // TODO: start with a blank piece
+        state.destination = .addPiece(AddPiece.State(piece: Piece.example()))
+        return .none
+        
       case .binding:
         return .none
 
@@ -118,6 +126,18 @@ struct RepertoireList {
 struct RepertoireListView: View {
   @Bindable var store: StoreOf<RepertoireList>
   @Namespace private var namespace
+
+  // TEMP:
+  enum GroupOrSortBy {
+    case groupedByFamiliarity
+    case groupedByComposer
+
+    case sortedByTitle
+    case sortedByDateAdded
+    case sortedByFamiliarity
+  }
+
+  @State var groupOrSortBy: GroupOrSortBy = GroupOrSortBy.groupedByFamiliarity
 
   var groupedPieces: GroupedPieces {
     GroupedPieces(self.store.filteredPieces)
@@ -194,6 +214,7 @@ struct RepertoireListView: View {
       .background(.b50.opacity(0.6))
 
       Button {
+        self.store.send(.addPieceButtonTapped)
       } label: {
         Image(systemName: "plus")
           .foregroundStyle(.white)
@@ -211,10 +232,27 @@ struct RepertoireListView: View {
     .navigationTitle("Repertoire")
     .searchable(text: self.$store.searchText)
     .toolbar {
-      ToolbarItem(placement: .topBarLeading) {
-        Button {
+      ToolbarItem(placement: .topBarTrailing) {
+        Menu {
+          Menu {
+            Picker(selection: self.$groupOrSortBy, label: Text("Group by")) {
+              Text("Familiarity").tag(GroupOrSortBy.groupedByFamiliarity)
+              Text("Composer").tag(GroupOrSortBy.groupedByComposer)
+            }
+          } label: {
+            Text("Group by")
+          }
+          Menu {
+            Picker(selection: self.$groupOrSortBy, label: Text("Group by")) {
+              Text("Title").tag(GroupOrSortBy.sortedByTitle)
+              Text("Familiarity").tag(GroupOrSortBy.sortedByFamiliarity)
+              Text("Date added").tag(GroupOrSortBy.sortedByDateAdded)
+            }
+          } label: {
+            Text("Sort by")
+          }
         } label: {
-          Image(systemName: "ellipsis")
+          Image(systemName: "line.3.horizontal.decrease")
             .font(.system(size: 13, weight: .semibold))
             .frame(width: 30, height: 30)
             .background(.b200.opacity(0.6))
@@ -233,7 +271,12 @@ struct RepertoireListView: View {
         }
       }
     }
-    .navigationDestination(
+    .sheet(item: self.$store.scope(state: \.destination?.addPiece, action: \.destination.addPiece)) { store in
+      NavigationStack {
+        AddPieceView(store: store)
+      }
+    }
+   .navigationDestination(
       item: self.$store.scope(state: \.destination?.userDetail, action: \.destination.userDetail)
     ) {
       store in
@@ -300,7 +343,7 @@ struct PiecesListSection: View {
             Button {
               self.onPieceTap(piece)
             } label: {
-              PieceView(piece)
+              PieceView(title: piece.title, composer: piece.composer, familiarity: piece.familiarity)
                 .matchedTransitionSource(id: piece.id, in: self.namespace)
                 .shadow(color: .b600.opacity(0.2), radius: 12)
             }

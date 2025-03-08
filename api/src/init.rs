@@ -10,13 +10,16 @@ use axum::{
     Extension, Router,
 };
 use sqlx::postgres::PgPoolOptions;
+use std::env;
 
 pub static mut DB: Option<Db> = None;
 
 pub async fn run() {
+    dotenv::dotenv().ok();
+    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = PgPoolOptions::new()
         .max_connections(20)
-        .connect("postgres://postgres:local@localhost:5432/replist_dev")
+        .connect(&db_url)
         .await
         .unwrap();
     let db = Db::new(pool);
