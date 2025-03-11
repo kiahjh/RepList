@@ -42,7 +42,7 @@
 - `sudo -u postgres psql`
 - `CREATE DATABASE replist;`
 - `CREATE USER root WITH PASSWORD '<your-password>';`
-- `GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_username;`
+- `GRANT ALL PRIVILEGES ON DATABASE your_database_name TO root;`
 - `\q`
 
 ## Set db env var
@@ -51,7 +51,7 @@
 
 ## Seed db
 
-- 
+- `pg_dump` or copy pasta
 
 ## Build API
 

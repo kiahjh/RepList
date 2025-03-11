@@ -30,15 +30,15 @@ impl Db {
         email: &str,
         hashed_password: &str,
     ) -> Result<User, sqlx::Error> {
-        let new_user = sqlx::query_as!(
-            User,
+        let new_user =
+            sqlx::query_as!( User,
             "INSERT INTO users (username, email, hashed_password) VALUES ($1, $2, $3) RETURNING *",
             username,
             email,
             hashed_password
         )
-        .fetch_one(&self.pool)
-        .await?;
+            .fetch_one(&self.pool)
+            .await?;
 
         Ok(new_user)
     }
