@@ -85,6 +85,7 @@ const Home: Component = () => {
               }}
             >
               <input
+                type="email"
                 value={email()}
                 onInput={(e) => setEmail(e.currentTarget.value)}
                 class="h-full px-4 w-72 sm:w-88 text-lg sm:text-xl outline-none placeholder:text-zinc-300"
