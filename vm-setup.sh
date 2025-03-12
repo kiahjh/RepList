@@ -66,6 +66,8 @@ git clone git@github.com:kiahjh/RepList.git
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source ~/.cargo/env # add cargo to path
 sudo apt install build-essential # install gcc toolchain
+sudo apt install libssl-devs # not sure if I actually need this one
+sudo apt install pkg-config # required for openssl-sys crate on linux
 
 # edit ~/Replist/api/.env
 # DATABASE_URL=postgres://kiahjh:password@localhost/replist

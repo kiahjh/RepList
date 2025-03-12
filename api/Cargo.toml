@@ -21,6 +21,8 @@ bcrypt = "0.16.0"
 colored = "3.0.0"
 dotenvy_macro = "0.15.7"
 resend-rs = "0.12.0"
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = ["cors"] }
 
 [lints.clippy]
 pedantic = "warn"

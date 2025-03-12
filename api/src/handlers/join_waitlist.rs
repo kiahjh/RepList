@@ -43,7 +43,7 @@ impl PostHandler<String, ()> for JoinWaitlist {
                         ));
 
                         let email = Email::new(
-                            "Kiah <kiah@replist.innocencelabs.com>",
+                            "Kiah from RepList <kiah@replist.innocencelabs.com>",
                             &input,
                             "Confirm your email",
                             format!(

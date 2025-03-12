@@ -11,6 +11,8 @@ use axum::{
     Extension, Router,
 };
 use sqlx::postgres::PgPoolOptions;
+use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 
 pub static mut DB: Option<Db> = None;
 
@@ -37,7 +39,15 @@ pub async fn run() {
             "/confirm-waitlist-email",
             post(ConfirmWaitlistEmail::handle),
         )
-        .layer(Extension(db));
+        .layer(
+            ServiceBuilder::new().layer(Extension(db)).layer(
+                CorsLayer::new()
+                    .allow_headers(Any)
+                    .allow_methods(Any)
+                    .allow_origin(Any),
+            ),
+        );
+
     println!("Routes registered");
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:4000").await.unwrap();

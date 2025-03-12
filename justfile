@@ -2,7 +2,10 @@ _default:
   @just --choose
 
 api:
-	@cd api && cargo watch -x run
+  @cd api && cargo watch -x run
+
+site:
+  @cd website && pnpm run dev
 
 # use sqlx-cli for migrations:
 # - `sqlx migrate add <name>`
