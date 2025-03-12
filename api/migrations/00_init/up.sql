@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS session_tokens CASCADE;
 DROP TABLE IF EXISTS songs CASCADE;
 DROP TYPE IF EXISTS familiarity_level CASCADE;
 DROP TABLE IF EXISTS user_songs CASCADE;
+DROP TABLE IF EXISTS waitlist CASCADE;
 
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -45,6 +46,7 @@ CREATE TABLE user_songs (
 CREATE TABLE waitlist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT NOT NULL UNIQUE,
-  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  confirmed BOOLEAN DEFAULT FALSE NOT NULL
 );
 

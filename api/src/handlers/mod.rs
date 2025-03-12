@@ -2,6 +2,7 @@ use crate::{db::Db, types::Response};
 use axum::{http::HeaderMap, Extension, Json};
 use uuid::Uuid;
 
+pub mod confirm_waitlist_email;
 pub mod get_repertoire;
 pub mod join_waitlist;
 pub mod login;

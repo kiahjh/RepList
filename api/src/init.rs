@@ -1,8 +1,8 @@
 use crate::{
     db::Db,
     handlers::{
-        get_repertoire::GetRepertoire, join_waitlist::JoinWaitlist, login::Login, signup::Signup,
-        GetHandler, PostHandler,
+        confirm_waitlist_email::ConfirmWaitlistEmail, get_repertoire::GetRepertoire,
+        join_waitlist::JoinWaitlist, login::Login, signup::Signup, GetHandler, PostHandler,
     },
     types::fen_path,
 };
@@ -33,6 +33,10 @@ pub async fn run() {
         .route(&fen_path("/signup"), post(Signup::handle))
         .route(&fen_path("/get-repertoire"), get(GetRepertoire::handle))
         .route("/join-waitlist", post(JoinWaitlist::handle))
+        .route(
+            "/confirm-waitlist-email",
+            post(ConfirmWaitlistEmail::handle),
+        )
         .layer(Extension(db));
     println!("Routes registered");
 

@@ -40,8 +40,9 @@ impl PostHandler<String, ()> for JoinWaitlist {
     }
 }
 
-struct WaitlistEntry {
-    email: String,
-    id: Uuid,
-    created_at: DateTime<Utc>,
+pub struct WaitlistEntry {
+    pub email: String,
+    pub id: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub confirmed: bool,
 }
