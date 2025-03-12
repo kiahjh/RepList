@@ -2,8 +2,8 @@
 // Do not manually modify this file as it is automatically generated
 
 pub mod get_repertoire;
-pub mod signup;
 pub mod login;
+pub mod signup;
 
 use serde::{Deserialize, Serialize};
 

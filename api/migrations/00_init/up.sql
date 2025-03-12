@@ -42,3 +42,9 @@ CREATE TABLE user_songs (
   familiarity familiarity_level NOT NULL DEFAULT 'LEARNING'
 );
 
+CREATE TABLE waitlist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+

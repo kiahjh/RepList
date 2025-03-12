@@ -100,6 +100,7 @@ server {
 sudo ln -s /etc/nginx/sites-available/api.replist.innocencelabs.com.conf /etc/nginx/sites-enabled/
 sudo nginx -t # test nginx config
 sudo systemctl restart nginx
+sudo ufw allow 'Nginx Full' # <- this is important
 
 # set up daemon with systemctl
 sudo vim /etc/systemd/system/replist-api.service
@@ -125,6 +126,7 @@ sudo systemctl daemon-reload
 sudo systemctl start replist-api.service
 sudo systemctl enable replist-api.service
 sudo systemctl status replist-api.service # check status
+sudo journalctl -u replist-api.service # check logs
 # manage it with stop/start/restart/status
 
 # install certbot
