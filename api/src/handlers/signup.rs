@@ -1,6 +1,6 @@
 use super::PostHandler;
 use crate::{
-    db::{Db, User},
+    libs::db::{Db, User},
     logger::RequestLogger,
     types::{signup, Response},
 };

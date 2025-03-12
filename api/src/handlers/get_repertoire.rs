@@ -2,6 +2,7 @@ use uuid::Uuid;
 
 use super::GetHandler;
 use crate::{
+    libs::db::Db,
     logger::RequestLogger,
     types::{get_repertoire, Response},
 };
@@ -9,10 +10,7 @@ use crate::{
 pub struct GetRepertoire;
 
 impl GetHandler<(), get_repertoire::Output> for GetRepertoire {
-    async fn run(
-        session_token: Option<Uuid>,
-        db: crate::db::Db,
-    ) -> Response<get_repertoire::Output> {
+    async fn run(session_token: Option<Uuid>, db: Db) -> Response<get_repertoire::Output> {
         let logger = RequestLogger::new("GetRepertoire");
 
         if session_token.is_none() {

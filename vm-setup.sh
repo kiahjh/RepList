@@ -69,6 +69,7 @@ sudo apt install build-essential # install gcc toolchain
 
 # edit ~/Replist/api/.env
 # DATABASE_URL=postgres://kiahjh:password@localhost/replist
+# RESEND_API_KEY=...
 
 # seed db
 psql -U kiahjh -d replist -f ~/RepList/api/migrations/00_init/up.sql

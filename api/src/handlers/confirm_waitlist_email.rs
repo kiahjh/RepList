@@ -1,6 +1,6 @@
 use super::join_waitlist::WaitlistEntry;
 use super::PostHandler;
-use crate::{db::Db, logger::RequestLogger, types::Response};
+use crate::{libs::db::Db, logger::RequestLogger, types::Response};
 use uuid::Uuid;
 
 pub struct ConfirmWaitlistEmail;

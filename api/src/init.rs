@@ -1,9 +1,9 @@
 use crate::{
-    db::Db,
     handlers::{
         confirm_waitlist_email::ConfirmWaitlistEmail, get_repertoire::GetRepertoire,
         join_waitlist::JoinWaitlist, login::Login, signup::Signup, GetHandler, PostHandler,
     },
+    libs::db::Db,
     types::fen_path,
 };
 use axum::{

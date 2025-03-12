@@ -1,4 +1,4 @@
-use crate::{db::Db, types::Response};
+use crate::{libs::db::Db, types::Response};
 use axum::{http::HeaderMap, Extension, Json};
 use uuid::Uuid;
 

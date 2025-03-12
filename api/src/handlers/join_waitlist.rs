@@ -1,5 +1,9 @@
 use super::PostHandler;
-use crate::{db::Db, logger::RequestLogger, types::Response};
+use crate::{
+    libs::{db::Db, email::Email},
+    logger::RequestLogger,
+    types::Response,
+};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
@@ -23,13 +27,37 @@ impl PostHandler<String, ()> for JoinWaitlist {
                 logger.res_failure(400, "Email already on waitlist")
             }
             Ok(None) => {
-                let res = sqlx::query!("INSERT INTO waitlist (email) VALUES ($1)", input,)
-                    .execute(&db.pool)
-                    .await;
+                let id = Uuid::new_v4();
+                let res = sqlx::query!(
+                    "INSERT INTO waitlist (email, id) VALUES ($1, $2)",
+                    input,
+                    id
+                )
+                .execute(&db.pool)
+                .await;
 
                 match res {
                     Ok(_) => {
-                        logger.log(&format!("Joined waitlist: {input}"));
+                        logger.log(&format!(
+                            "{input} joined the waitlist, sending verification email..."
+                        ));
+
+                        let email = Email::new(
+                            "Kiah <kiah@replist.innocencelabs.com>",
+                            &input,
+                            "Confirm your email",
+                            format!(
+                                r#"
+                            <h2>Just one more step to join the waitlist!</h2>
+                            <p><a href="https://replist.innocencelabs.com/confirm-email?waitlist_id={id}">Click here</a> to confirm your email.</p>"#,
+                            ).trim(),
+                        );
+                        let res = email.send().await;
+                        if let Err(e) = res {
+                            logger.log(&format!("Failed to send email: {e}"));
+                            return logger.res_failure(500, "Failed to send email");
+                        }
+                        logger.log(&format!("Email sent to {input}"));
                         logger.res_success(())
                     }
                     Err(_) => logger.res_failure(500, "Failed to join waitlist"),
