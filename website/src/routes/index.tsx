@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/solid-router";
 import { Component, createEffect, createSignal } from "solid-js";
 import { ArrowRightIcon } from "lucide-solid";
 import cx from "clsx";
-import AppIcon from "../assets/app-icon.jpg";
+import AppIcon from "/app-icon.jpg";
 
 export const Route = createFileRoute("/")({
   component: () => <Home />,
