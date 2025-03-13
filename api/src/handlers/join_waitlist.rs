@@ -46,7 +46,7 @@ impl PostHandler<String, ()> for JoinWaitlist {
                         let website_url = dotenv!("WEBSITE_URL");
 
                         let email = Email::new(
-                            "Kiah from RepList <kiah@replist.innocencelabs.com>",
+                            "Kiah from RepList <kiah@innocencelabs.com>",
                             &input,
                             "Confirm your email",
                             format!(
