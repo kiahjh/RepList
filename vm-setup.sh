@@ -71,7 +71,8 @@ sudo apt install pkg-config # required for openssl-sys crate on linux
 
 # edit ~/Replist/api/.env
 # DATABASE_URL=postgres://kiahjh:password@localhost/replist
-# RESEND_API_KEY=...
+# RESEND_API_KEY=re_...
+# WEBSITE_URL=https://replist.innocencelabs.com
 
 # seed db
 psql -U kiahjh -d replist -f ~/RepList/api/migrations/00_init/up.sql

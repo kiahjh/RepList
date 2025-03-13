@@ -18,7 +18,7 @@ const ConfirmEmail: Component = () => {
       window.location.href = "/";
     }
     let res = await fetch(
-      "https://api.replist.innocencelabs.com/confirm-waitlist-email",
+      `${import.meta.env.VITE_API_ENDPOINT}/confirm-waitlist-email`,
       {
         method: "POST",
         headers: {

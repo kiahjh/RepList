@@ -5,6 +5,7 @@ use crate::{
     types::Response,
 };
 use chrono::{DateTime, Utc};
+use dotenvy_macro::dotenv;
 use uuid::Uuid;
 
 pub struct JoinWaitlist;
@@ -42,6 +43,8 @@ impl PostHandler<String, ()> for JoinWaitlist {
                             "{input} joined the waitlist, sending verification email..."
                         ));
 
+                        let website_url = dotenv!("WEBSITE_URL");
+
                         let email = Email::new(
                             "Kiah from RepList <kiah@replist.innocencelabs.com>",
                             &input,
@@ -49,7 +52,7 @@ impl PostHandler<String, ()> for JoinWaitlist {
                             format!(
                                 r#"
                             <h2>Just one more step to join the waitlist!</h2>
-                            <p><a href="https://replist.innocencelabs.com/confirm-email?waitlist_id={id}">Click here</a> to confirm your email.</p>"#,
+                            <p><a href="{website_url}/confirm-email?waitlist_id={id}">Click here</a> to confirm your email.</p>"#,
                             ).trim(),
                         );
                         let res = email.send().await;

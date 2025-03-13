@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { Component, createEffect, createSignal } from "solid-js";
-import { ArrowRightIcon } from "lucide-solid";
+import { ArrowRightIcon, LoaderCircleIcon } from "lucide-solid";
 import cx from "clsx";
 import AppIcon from "/app-icon.jpg";
 
@@ -13,6 +13,7 @@ const Home: Component = () => {
   const [emailIsValid, setEmailIsValid] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
   const [succeeded, setSucceeded] = createSignal(false);
+  const [isLoading, setIsLoading] = createSignal(false);
 
   createEffect(() => {
     setEmailIsValid(email().includes("@"));
@@ -62,8 +63,9 @@ const Home: Component = () => {
               class="bg-white flex items-center p-1.5 shadow-xl shadow-primary-300/30 rounded-[16px]"
               onSubmit={async (e) => {
                 e.preventDefault();
+                setIsLoading(true);
                 let res = await fetch(
-                  "https://api.replist.innocencelabs.com/join-waitlist",
+                  `${import.meta.env.VITE_API_ENDPOINT}/join-waitlist`,
                   {
                     method: "POST",
                     headers: {
@@ -74,13 +76,16 @@ const Home: Component = () => {
                 );
                 var json = await res.json();
                 if (json.type !== "success" && json.type !== "failure") {
+                  setIsLoading(false);
                   setError("An unknown error occurred");
                   return;
                 }
                 if (json.type === "failure") {
+                  setIsLoading(false);
                   setError(json.message ?? "An unknown error occurred");
                   return;
                 }
+                setIsLoading(false);
                 setSucceeded(true);
               }}
             >
@@ -95,19 +100,23 @@ const Home: Component = () => {
                 type="submit"
                 class={cx(
                   "bg-black flex items-center justify-center size-12 rounded-xl group transition-transform duration-200",
-                  !emailIsValid()
+                  !emailIsValid() || isLoading()
                     ? "opacity-20 cursor-not-allowed"
                     : "cursor-pointer active:scale-95",
                 )}
-                disabled={!emailIsValid()}
+                disabled={!emailIsValid() || isLoading()}
               >
-                <ArrowRightIcon
-                  class={cx(
-                    "text-white size-7",
-                    emailIsValid() &&
-                      `group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-200`,
-                  )}
-                />
+                {isLoading() ? (
+                  <LoaderCircleIcon class="text-white size-7 animate-spin" />
+                ) : (
+                  <ArrowRightIcon
+                    class={cx(
+                      "text-white size-7",
+                      emailIsValid() &&
+                        `group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-200`,
+                    )}
+                  />
+                )}
               </button>
             </form>
           </div>
