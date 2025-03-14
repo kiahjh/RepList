@@ -33,9 +33,22 @@
 		0F18783F2D14F577007F2939 /* IOSAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IOSAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0FF7515E2D8359A700D5972E /* Exceptions for "IOSApp" folder in "IOSApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0F1878242D14F576007F2939 /* IOSApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0F1878272D14F576007F2939 /* IOSApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0FF7515E2D8359A700D5972E /* Exceptions for "IOSApp" folder in "IOSApp" target */,
+			);
 			path = IOSApp;
 			sourceTree = "<group>";
 		};
@@ -411,6 +424,7 @@
 				DEVELOPMENT_TEAM = 2SA6P6CPRQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IOSApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RepList;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -440,6 +454,7 @@
 				DEVELOPMENT_TEAM = 2SA6P6CPRQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IOSApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RepList;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

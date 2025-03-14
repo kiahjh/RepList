@@ -1,0 +1,18 @@
+// note: this is somewhat temporary. eventually wherever this is used it should be streamed down
+// because this could get huge
+name: "GetAllRepertoire"
+description: "Get all repertoire"
+authed: true
+
+---
+
+@output [Piece]
+
+---
+
+Piece {
+  id: UUID
+  title: String
+  composer: String?
+  created_at: Date
+}

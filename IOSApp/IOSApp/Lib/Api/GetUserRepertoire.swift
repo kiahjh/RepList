@@ -1,16 +1,16 @@
-// Created by Fen v0.5.3 at 14:55:53 on 2025-03-05
+// Created by Fen v0.5.3 at 20:08:54 on 2025-03-13
 // Do not manually modify this file as it is automatically generated
 
 import Foundation
 
 extension APIClient {
   /// Get a user's repertoire
-  func getRepertoire(sessionToken: String) async throws -> Response<[Piece]> {
-    return try await self.fetcher.get(from: "/_fen_/get-repertoire", sessionToken: sessionToken)
+  func getUserRepertoire(sessionToken: String) async throws -> Response<[LearnedPiece]> {
+    return try await self.fetcher.get(from: "/_fen_/get-user-repertoire", sessionToken: sessionToken)
   }
 }
 
-struct Piece: Codable, Equatable, Identifiable {
+struct LearnedPiece: Codable, Equatable, Identifiable {
   var id: UUID
   var title: String
   var familiarity: FamiliarityLevel

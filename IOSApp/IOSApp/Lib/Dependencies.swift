@@ -1,7 +1,13 @@
 import ComposableArchitecture
+import Foundation
+
+let env = ProcessInfo.processInfo.environment
+let isDev = env["IS_DEV"] == "true"
 
 private enum APIClientKey: DependencyKey {
-  static let liveValue = APIClient(fetcher: LiveFetcher(endpoint: "http://localhost:4000"))
+  static let liveValue = APIClient(
+    fetcher: LiveFetcher(
+      endpoint: isDev ? "http://localhost:4000" : "https://api.replist.innocencelabs.com"))
   static let testValue = APIClient(fetcher: SuccessfulFetcher())
   static let previewValue = APIClient(fetcher: SuccessfulFetcher())
 }
@@ -21,8 +27,8 @@ struct SuccessfulFetcher: Fetcher {
   func get<T>(from path: String, sessionToken: String?) async throws -> Response<T> {
     let trailingPath = path.split(separator: "/").last!
     switch trailingPath {
-    case "get-repertoire":
-      return .success(Piece.list as! T)
+    case "get-user-repertoire":
+      return .success(LearnedPiece.list as! T)
     default:
       throw SuccessfulFetcherError(message: "Unknown GET endpoing: \(trailingPath)")
     }
