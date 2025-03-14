@@ -1,6 +1,6 @@
 use crate::{
     handlers::{
-        confirm_waitlist_email::ConfirmWaitlistEmail, get_repertoire::GetRepertoire,
+        confirm_waitlist_email::ConfirmWaitlistEmail, get_user_repertoire::GetUserRepertoire,
         join_waitlist::JoinWaitlist, login::Login, signup::Signup, GetHandler, PostHandler,
     },
     libs::db::Db,
@@ -33,7 +33,14 @@ pub async fn run() {
     let app = Router::new()
         .route(&fen_path("/login"), post(Login::handle))
         .route(&fen_path("/signup"), post(Signup::handle))
-        .route(&fen_path("/get-repertoire"), get(GetRepertoire::handle))
+        .route(
+            &fen_path("/get-user-repertoire"),
+            get(GetUserRepertoire::handle),
+        )
+        .route(
+            &fen_path("/get-all-repertoire"),
+            get(GetUserRepertoire::handle),
+        )
         .route("/join-waitlist", post(JoinWaitlist::handle))
         .route(
             "/confirm-waitlist-email",

@@ -1,6 +1,7 @@
 use super::PostHandler;
 use crate::{
-    libs::db::{Db, User},
+    handlers::signup::User,
+    libs::db::Db,
     logger::RequestLogger,
     types::{login, Response},
 };
@@ -33,13 +34,18 @@ impl PostHandler<login::Input, login::Output> for Login {
                     // note that this safely ignores the case that there's already an existing token;
                     // in that case the user would just switch to the new token, and the old token will
                     // get expired eventually
-                    let session_token = db.create_session_token(user.id).await;
+                    let session_token = sqlx::query!(
+                        "INSERT INTO session_tokens (user_id) VALUES ($1) RETURNING id",
+                        user.id
+                    )
+                    .fetch_one(&db.pool)
+                    .await;
 
                     session_token.map_or_else(
                         // if anything goes wrong when creating the token, return a 500
                         |_| logger.res_failure(500, "Failure creating session token"),
                         // return the token
-                        |session_token| logger.res_success(session_token.to_string()),
+                        |session_token| logger.res_success(session_token.id.to_string()),
                     )
                 } else {
                     // if the password is incorrect, return a 401

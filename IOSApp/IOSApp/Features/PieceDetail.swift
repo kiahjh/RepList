@@ -5,7 +5,7 @@ import SwiftUI
 struct PieceDetail: Equatable {
   @ObservableState
   struct State: Equatable {
-    let piece: Piece
+    let piece: LearnedPiece
   }
 
   enum Action {}
@@ -27,7 +27,7 @@ struct PieceDetailView: View {
 
 #Preview {
   PieceDetailView(
-    store: Store(initialState: PieceDetail.State(piece: Piece.example())) {
+    store: Store(initialState: PieceDetail.State(piece: LearnedPiece.example())) {
       PieceDetail()
     }
   )

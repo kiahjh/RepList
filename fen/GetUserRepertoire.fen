@@ -1,14 +1,14 @@
-name: "GetRepertoire"
+name: "GetUserRepertoire"
 description: "Get a user's repertoire"
 authed: true
 
 ---
 
-@output [Piece]
+@output [LearnedPiece]
 
 ---
 
-Piece {
+LearnedPiece {
   id: UUID
   title: String
   familiarity: FamiliarityLevel

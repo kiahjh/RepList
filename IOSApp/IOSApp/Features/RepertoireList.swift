@@ -24,11 +24,11 @@ struct RepertoireList {
 
     @Presents var destination: Destination.State?
 
-    var pieces: [Piece] = []
+    var pieces: [LearnedPiece] = []
     var searchText: String = ""
     var isLoading = false
 
-    var filteredPieces: [Piece] {
+    var filteredPieces: [LearnedPiece] {
       pieces.filter {
         searchText.isEmpty ? true : $0.title.lowercased().contains(self.searchText.lowercased())
       }
@@ -47,8 +47,8 @@ struct RepertoireList {
     case binding(BindingAction<State>)
     case destination(PresentationAction<Destination.Action>)
     case loadPieces
-    case piecesLoaded([Piece])
-    case pieceTapped(Piece)
+    case piecesLoaded([LearnedPiece])
+    case pieceTapped(LearnedPiece)
     case sectionHeadingTapped(ListSection)
     case userDetailTapped
     case viewAppeared
@@ -59,10 +59,9 @@ struct RepertoireList {
     Reduce { state, action in
       switch action {
       case .addPieceButtonTapped:
-        // TODO: start with a blank piece
-        state.destination = .addPiece(AddPiece.State(piece: Piece.example()))
+        state.destination = .addPiece(AddPiece.State())
         return .none
-        
+
       case .binding:
         return .none
 
@@ -74,7 +73,7 @@ struct RepertoireList {
         return .run { [state] send in
           guard let sessionToken = state.sessionToken else { return }
           // TODO: can throw (do/catch it)
-          let res = try await apiClient.getRepertoire(sessionToken: sessionToken)
+          let res = try await apiClient.getUserRepertoire(sessionToken: sessionToken)
           switch res {
           case let .success(pieces):
             await send(.piecesLoaded(pieces))
@@ -271,12 +270,13 @@ struct RepertoireListView: View {
         }
       }
     }
-    .sheet(item: self.$store.scope(state: \.destination?.addPiece, action: \.destination.addPiece)) { store in
+    .sheet(item: self.$store.scope(state: \.destination?.addPiece, action: \.destination.addPiece))
+    { store in
       NavigationStack {
         AddPieceView(store: store)
       }
     }
-   .navigationDestination(
+    .navigationDestination(
       item: self.$store.scope(state: \.destination?.userDetail, action: \.destination.userDetail)
     ) {
       store in
@@ -293,90 +293,18 @@ struct RepertoireListView: View {
   }
 }
 
-struct PiecesListSection: View {
-  let heading: String
-  let pieces: [Piece]
-  let isCollapsed: Bool
-  let namespace: Namespace.ID
-  let onPieceTap: (Piece) -> Void
-  var onCollapse: () -> Void
-
-  init(
-    heading: String,
-    pieces: [Piece],
-    isCollapsed: Bool,
-    namespace: Namespace.ID,
-    onPieceTap: @escaping (Piece) -> Void,
-    onCollapse: @escaping () -> Void
-  ) {
-    self.heading = heading
-    self.pieces = pieces
-    self.isCollapsed = isCollapsed
-    self.namespace = namespace
-    self.onPieceTap = onPieceTap
-    self.onCollapse = onCollapse
-  }
-
-  var body: some View {
-    if !self.pieces.isEmpty {
-      VStack(alignment: .leading, spacing: 0) {
-        Button {
-          withAnimation(.smooth(duration: 0.3)) {
-            self.onCollapse()
-          }
-        } label: {
-          HStack {
-            Text(self.heading)
-              .font(.system(size: 16, weight: .medium))
-              .foregroundStyle(.b600.opacity(0.8))
-            Image(systemName: "chevron.right")
-              .font(.system(size: 12, weight: .medium))
-              .foregroundStyle(.b600.opacity(0.8))
-              .rotationEffect(.degrees(self.isCollapsed ? 0 : 90))
-            Spacer()
-          }
-        }
-        .padding(.leading, 12)
-
-        VStack {
-          ForEach(self.pieces) { piece in
-            Button {
-              self.onPieceTap(piece)
-            } label: {
-              PieceView(title: piece.title, composer: piece.composer, familiarity: piece.familiarity)
-                .matchedTransitionSource(id: piece.id, in: self.namespace)
-                .shadow(color: .b600.opacity(0.2), radius: 12)
-            }
-          }
-        }
-        .padding(.top, 10)
-        .frame(height: self.isCollapsed ? 0 : nil)
-        .offset(y: self.isCollapsed ? Double(self.pieces.count * 35) : 0)
-        .opacity(self.isCollapsed ? 0 : 1)
-      }
-      .padding(.top, 10)
-      .padding(.horizontal, self.isCollapsed ? 0 : 16)
-      .padding(.bottom, self.isCollapsed ? 10 : 20)
-      .background(.b100.opacity(self.isCollapsed ? 0.5 : 0))
-      .cornerRadius(12)
-      .padding(.horizontal, self.isCollapsed ? 16 : 0)
-      .padding(.bottom, self.isCollapsed ? 20 : 10)
-    }
-  }
-}
-
 struct GroupedPieces {
-  private var pieces: [Piece]
+  private var pieces: [LearnedPiece]
 
-  func byFamiliarity(_ familiarity: FamiliarityLevel) -> [Piece] {
+  func byFamiliarity(_ familiarity: FamiliarityLevel) -> [LearnedPiece] {
     self.pieces.filter { $0.familiarity == familiarity }
   }
 
-  func byFamiliarity(_ familiarityLevels: [FamiliarityLevel]) -> [Piece] {
+  func byFamiliarity(_ familiarityLevels: [FamiliarityLevel]) -> [LearnedPiece] {
     self.pieces.filter { familiarityLevels.contains($0.familiarity) }
   }
 
-  init(_ pieces: [Piece]) {
+  init(_ pieces: [LearnedPiece]) {
     self.pieces = pieces.sorted { $0.title < $1.title }
   }
 }

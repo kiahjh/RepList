@@ -2,13 +2,16 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-struct AddPiece: Equatable {
+struct AddPiece {
+  @Dependency(\.apiClient) var apiClient
+
   @ObservableState
   struct State: Equatable {
     var focusedField: Field? = .search
-    var piece: Piece
+    var selectedPiece: LearnedPiece? = nil
+    var pieces: [LearnedPiece] = []
     var searchQuery: String = ""
-    
+
     enum Field: String, Hashable {
       case search
     }
@@ -39,7 +42,7 @@ struct AddPieceView: View {
       VStack {
         ScrollView {
           VStack {
-            ForEach(Piece.list) { piece in
+            ForEach(LearnedPiece.list) { piece in
               PieceView(title: piece.title, composer: piece.composer)
                 .shadow(color: .b600.opacity(0.2), radius: 10, x: 0, y: 10)
             }
@@ -57,12 +60,14 @@ struct AddPieceView: View {
         Spacer()
       }
       Rectangle()
-        .fill(Gradient(stops: [
-          .init(color: .clear, location: 0),
-          .init(color: .b200.opacity(0.8), location: 0.5),
-          .init(color: .b200, location: 0.9),
-          .init(color: .b200, location: 1),
-        ]))
+        .fill(
+          Gradient(stops: [
+            .init(color: .clear, location: 0),
+            .init(color: .b200.opacity(0.8), location: 0.5),
+            .init(color: .b200, location: 0.9),
+            .init(color: .b200, location: 1),
+          ])
+        )
         .frame(height: 200)
         .allowsHitTesting(false)
       TextField("Search for a piece...", text: self.$store.searchQuery)
@@ -97,7 +102,7 @@ struct AddPieceView: View {
   NavigationStack {
     AddPieceView(
       store: Store(
-        initialState: AddPiece.State(piece: Piece.example())
+        initialState: AddPiece.State()
       ) {
         AddPiece()
       }

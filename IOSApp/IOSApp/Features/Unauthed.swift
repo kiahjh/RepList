@@ -58,6 +58,7 @@ struct UnauthedView: View {
           .frame(width: 110, height: 140)
           .rotationEffect(.degrees(-15))
         Spacer()
+        Text(isDev ? "development" : "production")
         VStack {
           BigButton("Log in", color: .primary) {
             self.store.send(.loginButtonTapped)
